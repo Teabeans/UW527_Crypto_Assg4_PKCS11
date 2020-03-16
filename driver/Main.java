@@ -1,7 +1,168 @@
+//-------|---------|---------|---------|---------|---------|---------|---------|
+//
+// UW CSS 527 - Assg4 - PKCS#11
+// driver/Main.java
+//
+//-------|---------|---------|---------|---------|---------|---------|---------|
+
+//-----------------------------------------------------------------------------|
+// Authorship
+//-----------------------------------------------------------------------------|
+//
+// Tim Lum
+// twhlum@gmail.com
+//
+// Created:  2020.03.14
+// Modified: 2020.03.15
+// For the University of Washington Bothell, CSS 527
+// Winter 2020, Masters in Cybersecurity Engineering (MCSE)
+//
+
+//-----------------------------------------------------------------------------|
+// File Description
+//-----------------------------------------------------------------------------|
+//
+// Driver for a mock application which attempts to communicate to an HSM
+
+//-----------------------------------------------------------------------------|
+// Package Files
+//-----------------------------------------------------------------------------|
+//
+// See code repository at: https://github.com/Teabeans/UW527_Crypto_Assg4_PKCS11
+
+//-----------------------------------------------------------------------------|
+// Useage
+//-----------------------------------------------------------------------------|
+//
+// Compile with:
+// $ javac Main.java && java Main
+//
+// Note: Requires Java SDK installed to the Linux environment. Install with:
+// $ sudo apt-get update
+// $ sudo apt-get install openjdk-8-jdk
+//
+// If using compilation script, edit script permission with:
+// $ chmod u+x compile.sh
+// Then run using:
+// $ ./compile.sh
+
+//-------|---------|---------|---------|---------|---------|---------|---------|
+//
+//       INCLUDES
+//
+//-------|---------|---------|---------|---------|---------|---------|---------|
+
+import java.io.File;                  // For file operations
+import java.io.FileNotFoundException; // For file exception
+import java.io.IOException;           // For buffered writer
+import java.io.BufferedWriter;        // For buffered writing
+import java.io.FileWriter;            // For buffered writing
+import java.util.Iterator;            // For iterators
+import java.util.Scanner;             // For user inputs
+
 public class Main {
+
+// -------|---------|---------|---------|---------|---------|---------|---------|
+//
+// GLOBAL CONSTANTS
+//
+// -------|---------|---------|---------|---------|---------|---------|---------|
+  static boolean DEBUG      = false;
+  static boolean FASTMODE   = false;
+  static boolean LOGGED_IN  = true;
+  static String  WHO_AM_I   = "InigoMontoya";
+  static String  MY_SECRET  = "YouKilledMyFatherPrepareToDie";
+  static final String WRITE_FILE = "../msgs/application_to_driver.txt";
+  static final String READ_FILE  = "../msgs/driver_to_application.txt";
+
+// -------|---------|---------|---------|---------|---------|---------|---------|
+//
+// PROGRAM DRIVER
+//
+// -------|---------|---------|---------|---------|---------|---------|---------|
+
   public static void main(String[] args) {
-    System.out.println( "Hi! I am a PKCS#11 compliant driver!" );
+    System.out.println();
+    System.out.println( "\u001b[37;1mWELCOME TO THE vHSM DRIVER EXCHANGE INTERFACE: \u001b[0m" );
     System.out.println( "I shunt requests between an application and compliant vHSM" );
+    System.out.println( );
+
+    Scanner userInput = new Scanner(System.in);
+    boolean isRunning = true;
+
+    while( isRunning ) {
+      renderOptions();
+      String choice = userInput.next();
+      System.out.println();
+
+      // -------|---------|---------|---------|
+      // APPLICATION REQUEST READ CASE
+      // -------|---------|---------|---------|
+      if( choice.equals( "AR" ) ) {
+        System.out.println( "---READ FROM APPLICATION SELECTED---");
+        System.out.println();
+      }
+
+      // -------|---------|---------|---------|
+      // vHSM REQUEST WRITE CASE
+      // -------|---------|---------|---------|
+      else if( choice.equals( "VW" ) ) {
+        System.out.println( "---WRITE TO VHSM SELECTED---");
+        System.out.println();
+      }
+
+      // -------|---------|---------|---------|
+      // vHSM RESULT READ CASE
+      // -------|---------|---------|---------|
+      else if( choice.equals( "VR" ) ) {
+        System.out.println( "---READ FROM vHSM SELECTED---");
+        System.out.println();
+      }
+
+      // -------|---------|---------|---------|
+      // APPLICATION RESULT WRITE CASE
+      // -------|---------|---------|---------|
+      else if( choice.equals( "AW" ) ) {
+        System.out.println( "---WRITE TO APPLICATION SELECTED---");
+        System.out.println();
+      }
+
+      // -------|---------|---------|---------|
+      // EXIT CASE
+      // -------|---------|---------|---------|
+      else if( choice.equals( "X" ) ) {
+        System.out.println( "---EXIT SELECTED---");
+        System.out.println();
+        isRunning = false;
+      }
+
+      // -------|---------|---------|---------|
+      // VERBOSITY CASE
+      // -------|---------|---------|---------|
+      else if( choice.equals( "V" ) ) {
+        System.out.println( "---VERBOSITY TOGGLE SELECTED---");
+        System.out.println();
+        if( !DEBUG ) {
+          System.out.println( "Toggling verbosity (DEBUG)..." );
+        }
+        DEBUG = !DEBUG;
+
+        System.out.println( "\u001b[33;1mVerbosity :\u001b[0m " + DEBUG );
+        System.out.println();
+        System.out.println( "\u001b[32;1m\u001b[4mVerbosity toggled!\u001b[0m" );
+        System.out.println();
+      }
+
+      // -------|---------|---------|---------|
+      // BAD INPUT CASE
+      // -------|---------|---------|---------|
+      else {
+        System.out.println( "Selection not recognized or invalid (are you logged in?)." );
+        System.out.println();
+      }
+
+
+    }
 
     System.out.println( "When instructed to do so, I will read the application message buffer" );
     applicationRead();
@@ -15,29 +176,9 @@ public class Main {
     if( true ) { // TODO: replace with if there was a valid HSM message
       System.out.println( "Now I will convert the vHSM compliant response to an application message!" );
       applicationWrite();
-    }    
-
+    }
   }
 
-  public void applicationRead( ) {
-    System.out.println( "This is a read of a message from an application" );
-    System.out.println( "Please read me from msgs/application_to_driver.txt" );
-  }
-
-  public void applicationWrite( ) {
-    System.out.println( "This is a write of a message to an application" );
-    System.out.println( "Please write me to msgs/driver_to_application.txt" );
-  }
-
-  public void vHSMRead( ) {
-    System.out.println( "This is a read of a message from a PKCS#11 vHSM" );
-    System.out.println( "Please read me from msgs/vHSM_to_driver.txt" );
-  }
-
-  public void vHSMWrite( ) {
-    System.out.println( "This is a write of a message to a vHSM" );
-    System.out.println( "Please write me to msgs/driver_to_vHSM.txt" );
-  }
 //-------|---------|---------|---------|---------|---------|---------|---------|
 //
 // SUPPORT FUNCTIONS
@@ -54,6 +195,8 @@ public class Main {
 // driverRead()
 //-------|---------|---------|---------|
   public static String driverReadFromApp( ) {
+    System.out.println( "This is a read of a message from an application" );
+    System.out.println( "Please read me from msgs/application_to_driver.txt" );
     String result = readFileToString( READ_FILE );
     return result;
   }
@@ -61,6 +204,8 @@ public class Main {
 // driverRead()
 //-------|---------|---------|---------|
   public static String driverReadFromvHSM( ) {
+    System.out.println( "This is a read of a message from a PKCS#11 vHSM" );
+    System.out.println( "Please read me from msgs/vHSM_to_driver.txt" );
     String result = readFileToString( READ_FILE );
     return result;
   }
@@ -69,12 +214,16 @@ public class Main {
 // driverWrite()
 //-------|---------|---------|---------|
   public static void driverWriteToApp( String message ) {
+    System.out.println( "This is a write of a message to an application" );
+    System.out.println( "Please write me to msgs/driver_to_application.txt" );
     writeStringToFile( message, WRITE_FILE );
   }
 //-------|---------|---------|---------|
 // driverWrite()
 //-------|---------|---------|---------|
   public static void driverWriteTovHSM( String message ) {
+    System.out.println( "This is a write of a message to a vHSM" );
+    System.out.println( "Please write me to msgs/driver_to_vHSM.txt" );
     writeStringToFile( message, WRITE_FILE );
   }
 
