@@ -77,10 +77,8 @@
  * @author Aktiv Co. <hotline@rutoken.ru>
  */
 
-import java.util.Arrays;
-import java.util.List;
-
 public class CK_VERSION {
+
 	public byte major; /* integer portion of version number */
 	public byte minor; /* 1/100ths portion of version number */
 
