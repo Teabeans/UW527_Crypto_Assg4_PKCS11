@@ -67,11 +67,11 @@ public class Main {
 // GLOBAL CONSTANTS
 //
 // -------|---------|---------|---------|---------|---------|---------|---------|
-  static boolean DEBUG      = true;
+  static boolean DEBUG      = false;
   static boolean FASTMODE   = false;
   static boolean LOGGED_IN  = true;
   static String  WHO_AM_I   = "InigoMontoya";
-  static String  MY_SECRET  = "2bb80d537b1da3e38bd30361aa855686bde0eacd7162fef6a25fe97bf527a25b"; // TODO: Validate, may not be necessary for application
+  static String  MY_SECRET  = "YouKilledMyFatherPrepareToDie";
   static final String WRITE_FILE = "../msgs/application_to_driver.txt";
   static final String READ_FILE  = "../msgs/driver_to_application.txt";
 
@@ -81,11 +81,13 @@ public class Main {
 //
 // -------|---------|---------|---------|---------|---------|---------|---------|
   public static void main(String[] args) {
-    System.out.println( "TODO: Hi! I am a host/application!" );
-    System.out.println( "TODO: I want to make a call to the HSM." );
+    System.out.println();
+    System.out.println( "\u001b[37;1mWELCOME TO THE vHSM CONTROL APPLICATION: \u001b[0m" );
+    System.out.println( );
 
     Scanner userInput = new Scanner(System.in);
     boolean isRunning = true;
+
     while( isRunning ) {
       renderOptions();
       String choice = userInput.next();
@@ -107,9 +109,17 @@ public class Main {
       // SEND KEYPAIR REQUEST CASE
       // -------|---------|---------|---------|
       else if( choice.equals( "M" ) ) {
-        // (M)ake a keypair
-        System.out.println( "TODO: I will send an application-specific request to the driver." );
-        applicationWrite();
+        System.out.println( "---MAKE KEYPAIR SELECTED---");
+        System.out.println();
+
+        System.out.println( "PARAMETERS:" );
+        System.out.println( "Username    : " + WHO_AM_I  );
+        System.out.println( "Key Password: " + MY_SECRET );
+        System.out.println();
+
+        applicationWrite( "<TODO: Keypair generation request> " + WHO_AM_I + " : " + MY_SECRET );
+
+        System.out.println( "\u001b[32;1m\u001b[4mRequest sent!\u001b[0m" );
         System.out.println();
       }
 
@@ -117,9 +127,18 @@ public class Main {
       // READ KEYPAIR RESPONSE CASE
       // -------|---------|---------|---------|
       else if( choice.equals( "R" ) ) {
-        // (R)ead results
-        System.out.println( "TODO: I can also read application-specific responses from the driver." );
-        applicationRead();
+        System.out.println( "---RESULT READ SELECTED---");
+        System.out.println();
+
+        // Perform the read
+        String readResult = applicationRead();
+
+        System.out.println( "-----BEGIN RESPONSE MESSAGE-----\u001b[30;1m" );
+        System.out.println( readResult );
+        System.out.println( "\u001b[0m-----END RESPONSE MESSAGE-----" );
+        System.out.println();
+
+        System.out.println( "\u001b[32;1m\u001b[4mRead complete!\u001b[0m" );
         System.out.println();
       }
 
@@ -167,15 +186,71 @@ public class Main {
 // SUPPORT FUNCTIONS
 //
 //-------|---------|---------|---------|---------|---------|---------|---------|
-  public static void applicationRead( ) {
-    System.out.println( "This is a read of a message from a driver" );
-    System.out.println( "Please read me to msgs/driver_to_application.txt" );
+
+//-------|---------|---------|---------|---------|---------|---------|---------|
+//
+// READERS/LOADERS
+//
+//-------|---------|---------|---------|---------|---------|---------|---------|
+
+//-------|---------|---------|---------|
+// applicationRead()
+//-------|---------|---------|---------|  
+  public static String applicationRead( ) {
+    String result = readFileToString( READ_FILE );
+    return result;
   }
 
-  public static void applicationWrite( ) {
-  	System.out.println( "This is an application-specific message being sent to the driver" );
-  	System.out.println( "Please write me to msgs/application_to_driver.txt" );
+//-------|---------|---------|---------|
+// applicationWrite()
+//-------|---------|---------|---------|  
+  public static void applicationWrite( String message ) {
+    writeStringToFile( message, WRITE_FILE );
   }
+
+//-------|---------|---------|---------|
+// readFileToString()
+//-------|---------|---------|---------|  
+// Reads a file and returns the contents as a String
+  public static String readFileToString( String filename ) {    
+    File f = new File( filename );
+    Scanner fileReader = null;
+    try {
+      fileReader = new Scanner( f );
+    }
+    catch (FileNotFoundException e) {
+      e.printStackTrace();
+    }
+    String retString = "";
+    while( fileReader.hasNextLine() ) {
+      retString += fileReader.nextLine();
+    }
+    if( DEBUG ) {
+      System.out.println( "  [readFile()] - Read File: " + filename );
+      System.out.println( "  [readFile()] - Contents : " );
+      System.out.println( retString );
+      System.out.println();
+    }
+    return retString;
+  } // Closing readFile()
+
+//-------|---------|---------|---------|
+// writeStringToFile()
+//-------|---------|---------|---------|  
+// Takes a String and writes to file
+  public static void writeStringToFile( String text, String filename ) {    
+    FileWriter fw = null;
+    BufferedWriter writer = null;
+    try {
+      fw = new FileWriter( filename );
+      writer = new BufferedWriter( fw );
+      writer.write( text );
+      writer.close();
+    }
+    catch (IOException e) {
+      e.printStackTrace();
+    }
+  } // Closing writeStringToFile()
 
 //-------|---------|---------|---------|---------|---------|---------|---------|
 //
