@@ -22,7 +22,7 @@
 // File Description
 //-----------------------------------------------------------------------------|
 //
-// Driver for a mock Driver which attempts to communicate to a Driver
+// Driver for a mock vHSM which attempts to communicate to a Driver
 
 //-----------------------------------------------------------------------------|
 // Package Files
@@ -106,8 +106,8 @@ public class Main {
 //
 // -------|---------|---------|---------|---------|---------|---------|---------|
 
-  static boolean DEBUG      = true;
-  static boolean FASTMODE   = false;
+  static boolean DEBUG      = false;
+  static boolean FASTMODE   = true;
   static boolean LOGGED_IN  = false;
   static boolean PERSISTENT = true;
   static String WHO_AM_I   = null;
@@ -165,7 +165,7 @@ public class Main {
     // Auto-login
     if( FASTMODE ) {
       LOGGED_IN = true;
-      WHO_AM_I = "teabeans";
+      WHO_AM_I = "teabean";
     }
 
     System.out.println();
@@ -1548,14 +1548,12 @@ public class Main {
     System.out.println( "|   \u001b[1mL\u001b[0m  - \u001b[4mL\u001b[0mogin                                                                  |" );
     System.out.println( "|   \u001b[1mR\u001b[0m  - \u001b[4mR\u001b[0meport the contents of the vHSM                                        |" );
     if( LOGGED_IN ) {
-      System.out.println( "|   \u001b[1mC\u001b[0m  - \u001b[4mC\u001b[0mreate Key                                                             |" );
-      System.out.println( "|   \u001b[1mE\u001b[0m  - \u001b[4mE\u001b[0mncrypt (w/private key)                                                |" );
-      System.out.println( "|   \u001b[1mD\u001b[0m  - \u001b[4mD\u001b[0mecrypt (w/public  key)                                                |" );
+      System.out.println( "|   \u001b[1mC\u001b[0m  - \u001b[4mC\u001b[0mommunicate with Driver (receive request)                              |" );
+      System.out.println( "|   \u001b[1mS\u001b[0m  - \u001b[4mS\u001b[0mend key product back                                                  |" );
     }
     else if( !LOGGED_IN ) {
-      System.out.println( "|   \u001b[30;1mC  - (Unavailable - Please log in) Create Key \u001b[0m                              |" );
-      System.out.println( "|   \u001b[30;1mE  - (Unavailable - Please log in) Encrypt (w/private key) \u001b[0m                 |" );
-      System.out.println( "|   \u001b[30;1mD  - (Unavailable - Please log in) Decrypt (w/public  key) \u001b[0m                 |" );
+      System.out.println( "|   \u001b[30;1mC  - (Unavailable - Please log in) Communicate with Driver (receive request)\u001b[0m|" );
+      System.out.println( "|   \u001b[30;1mS  - (Unavailable - Please log in) Send key product back \u001b[0m                   |" );
     }
     System.out.println( "|   \u001b[1mT\u001b[0m  - \u001b[4mT\u001b[0mare HSM (drop tables)                                                 |" );
     System.out.println( "|   \u001b[1mV\u001b[0m  - \u001b[4mV\u001b[0merbosity (toggle)                                                     |" );
