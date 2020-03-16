@@ -81,29 +81,46 @@ public class Main {
 //
 // -------|---------|---------|---------|---------|---------|---------|---------|
   public static void main(String[] args) {
+    System.out.println( "TODO: Hi! I am a host/application!" );
+    System.out.println( "TODO: I want to make a call to the HSM." );
+
     Scanner userInput = new Scanner(System.in);
     boolean isRunning = true;
     while( isRunning ) {
       renderOptions();
-
-      System.out.println( "Hi! I am a host/application!" );
-      System.out.println( "I want to make a call to the HSM." );
-
       String choice = userInput.next();
       System.out.println();
 
       // -------|---------|---------|---------|
       // SEND KEYPAIR REQUEST CASE
       // -------|---------|---------|---------|
-      if( choice.equals( "M" ) ) {
+      if( choice.equals( "L" ) ) {
+        System.out.println( "---LOGIN SELECTED---" );
+        System.out.println();
+        System.out.println( "\u001b[31;1m\u001b[4mLogin not applicable.\u001b[0m Setting default credentials..." );
+        LOGGED_IN = true;
+        WHO_AM_I = "InigoMontoya";
+        System.out.println();
+      }
+
+      // -------|---------|---------|---------|
+      // SEND KEYPAIR REQUEST CASE
+      // -------|---------|---------|---------|
+      else if( choice.equals( "M" ) ) {
         // (M)ake a keypair
+        System.out.println( "TODO: I will send an application-specific request to the driver." );
+        applicationWrite();
+        System.out.println();
       }
 
       // -------|---------|---------|---------|
       // READ KEYPAIR RESPONSE CASE
       // -------|---------|---------|---------|
-      if( choice.equals( "R" ) ) {
+      else if( choice.equals( "R" ) ) {
         // (R)ead results
+        System.out.println( "TODO: I can also read application-specific responses from the driver." );
+        applicationRead();
+        System.out.println();
       }
 
       // -------|---------|---------|---------|
@@ -116,6 +133,23 @@ public class Main {
       }
 
       // -------|---------|---------|---------|
+      // VERBOSITY CASE
+      // -------|---------|---------|---------|
+      else if( choice.equals( "V" ) ) {
+        System.out.println( "---VERBOSITY TOGGLE SELECTED---");
+        System.out.println();
+        if( !DEBUG ) {
+          System.out.println( "Toggling verbosity (DEBUG)..." );
+        }
+        DEBUG = !DEBUG;
+
+        System.out.println( "\u001b[33;1mVerbosity :\u001b[0m " + DEBUG );
+        System.out.println();
+        System.out.println( "\u001b[32;1m\u001b[4mVerbosity toggled!\u001b[0m" );
+        System.out.println();
+      }
+
+      // -------|---------|---------|---------|
       // BAD INPUT CASE
       // -------|---------|---------|---------|
       else {
@@ -123,11 +157,8 @@ public class Main {
         System.out.println();
       }
 
-      System.out.println( "I will send an application-specific request to the driver." );
-      applicationWrite();
 
-      System.out.println( "I can also read application-specific responses from the driver." );
-      applicationRead();
+
     }
   }
 
@@ -160,23 +191,17 @@ public class Main {
     System.out.println( "+-------------------------------------------------------------------------------+" );
     System.out.println( "|   OPTIONS                                                                     |" );
     System.out.println( "+-------------------------------------------------------------------------------+" );
-    System.out.println( "|   \u001b[1mN\u001b[0m  - make a \u001b[4mN\u001b[0mew user account                                                |" );
     System.out.println( "|   \u001b[1mL\u001b[0m  - \u001b[4mL\u001b[0mogin                                                                  |" );
-    System.out.println( "|   \u001b[1mR\u001b[0m  - \u001b[4mR\u001b[0meport the contents of the vHSM                                        |" );
     if( LOGGED_IN ) {
-      System.out.println( "|   \u001b[1mC\u001b[0m  - \u001b[4mC\u001b[0mreate Key                                                             |" );
-      System.out.println( "|   \u001b[1mE\u001b[0m  - \u001b[4mE\u001b[0mncrypt (w/private key)                                                |" );
-      System.out.println( "|   \u001b[1mD\u001b[0m  - \u001b[4mD\u001b[0mecrypt (w/public  key)                                                |" );
+      System.out.println( "|   \u001b[1mM\u001b[0m  - \u001b[4mM\u001b[0make Key                                                               |" );
+      System.out.println( "|   \u001b[1mR\u001b[0m  - \u001b[4mR\u001b[0mead Key                                                               |" );
     }
     else if( !LOGGED_IN ) {
-      System.out.println( "|   \u001b[30;1mC  - (Unavailable - Please log in) Create Key \u001b[0m                              |" );
-      System.out.println( "|   \u001b[30;1mE  - (Unavailable - Please log in) Encrypt (w/private key) \u001b[0m                 |" );
-      System.out.println( "|   \u001b[30;1mD  - (Unavailable - Please log in) Decrypt (w/public  key) \u001b[0m                 |" );
+      System.out.println( "|   \u001b[30;1mM  - (Unavailable - Please log in) Make Key \u001b[0m                              |" );
+      System.out.println( "|   \u001b[30;1mR  - (Unavailable - Please log in) Read Key \u001b[0m                 |" );
     }
-    System.out.println( "|   \u001b[1mT\u001b[0m  - \u001b[4mT\u001b[0mare HSM (drop tables)                                                 |" );
     System.out.println( "|   \u001b[1mV\u001b[0m  - \u001b[4mV\u001b[0merbosity (toggle)                                                     |" );
     System.out.println( "|   \u001b[1mX\u001b[0m  - e\u001b[4mX\u001b[0mit                                                                   |" );
-    System.out.println( "|   \u001b[1mSX\u001b[0m - \u001b[4mS\u001b[0mave + e\u001b[4mX\u001b[0mit                                                            |" );
     System.out.println( "+-------------------------------------------------------------------------------+" );
     System.out.println();
     System.out.print( "\u001b[37;1mPlease select an option: \u001b[0m" );
