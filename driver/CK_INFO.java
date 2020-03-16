@@ -77,44 +77,29 @@
  * @author Aktiv Co. <hotline@rutoken.ru>
  */
 
-import com.sun.jna.NativeLong;
+public class CK_INFO {
 
-import java.util.Arrays;
-import java.util.List;
+	public CK_VERSION cryptokiVersion;
 
-public class CK_INFO extends Pkcs11Structure {
+	public byte[] manufacturerID = new byte[32];
 
-    public CK_VERSION cryptokiVersion;
+	public long flags;
 
-    public byte[] manufacturerID = new byte[32];
+	/* libraryDescription and libraryVersion are new for v2.0 */
 
-    public NativeLong flags;
+	public byte[] libraryDescription = new byte[32];
 
-    /* libraryDescription and libraryVersion are new for v2.0 */
+	public CK_VERSION libraryVersion;
 
-    public byte[] libraryDescription = new byte[32];
+	public CK_INFO() {
+	}
 
-    public CK_VERSION libraryVersion;
-
-    public CK_INFO() {}
-
-    public CK_INFO(CK_VERSION cryptoVer, byte[] vendor, NativeLong flags,
-            byte[] libDesc, CK_VERSION libVer) {
-        this.cryptokiVersion = cryptoVer;
-        this.manufacturerID = vendor;
-        this.flags = flags;
-        this.libraryDescription = libDesc;
-        this.libraryVersion = libVer;
-    }
-
-    protected List<String> getFieldOrder() {
-        return Arrays.asList(new String[] {
-                "cryptokiVersion",
-                "manufacturerID",
-                "flags",
-                "libraryDescription",
-                "libraryVersion"
-        });
-    }
+	public CK_INFO(CK_VERSION cryptoVer, byte[] vendor, long flags, byte[] libDesc, CK_VERSION libVer) {
+		this.cryptokiVersion = cryptoVer;
+		this.manufacturerID = vendor;
+		this.flags = flags;
+		this.libraryDescription = libDesc;
+		this.libraryVersion = libVer;
+	}
 
 }

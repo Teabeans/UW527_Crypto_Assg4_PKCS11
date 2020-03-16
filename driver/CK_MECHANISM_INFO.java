@@ -77,33 +77,21 @@
  * @author Aktiv Co. <hotline@rutoken.ru>
  */
 
-import com.sun.jna.NativeLong;
+public class CK_MECHANISM_INFO {
 
-import java.util.Arrays;
-import java.util.List;
+    public long ulMinKeySize;
 
-public class CK_MECHANISM_INFO extends Pkcs11Structure {
+    public long ulMaxKeySize;
 
-    public NativeLong ulMinKeySize;
-
-    public NativeLong ulMaxKeySize;
-
-    public NativeLong flags;
+    public long flags;
 
     public CK_MECHANISM_INFO() {}
 
-    public CK_MECHANISM_INFO(NativeLong minKeySize, NativeLong maxKeySize,
-            NativeLong flags) {
+    public CK_MECHANISM_INFO(long minKeySize, long maxKeySize,
+    		long flags) {
         this.ulMinKeySize = minKeySize;
         this.ulMaxKeySize = maxKeySize;
         this.flags = flags;
     }
 
-    protected List<String> getFieldOrder() {
-        return Arrays.asList(new String[] {
-                "ulMinKeySize",
-                "ulMaxKeySize",
-                "flags"
-        });
-    }
 }

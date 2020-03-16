@@ -77,36 +77,24 @@
  * @author Aktiv Co. <hotline@rutoken.ru>
  */
 
-import com.sun.jna.NativeLong;
-import com.sun.jna.Pointer;
+public class CK_MECHANISM {
 
-import java.util.Arrays;
-import java.util.List;
+	public long mechanism;
 
-public class CK_MECHANISM extends Pkcs11Structure {
+	public long pParameter;
 
-    public NativeLong mechanism;
+	/*
+	 * ulParameterLen was changed from CK_USHORT to CK_ULONG for v2.0
+	 */
+	public long ulParameterLen;
 
-    public Pointer pParameter;
+	public CK_MECHANISM() {
+	}
 
-    /*
-     * ulParameterLen was changed from CK_USHORT to CK_ULONG for v2.0
-     */
-    public NativeLong ulParameterLen;
+	public CK_MECHANISM(long mech, long pParam, long ulParamLen) {
+		mechanism = mech;
+		pParameter = pParam;
+		ulParameterLen = ulParamLen;
+	}
 
-    public CK_MECHANISM() {}
-
-    public CK_MECHANISM(NativeLong mech, Pointer pParam, NativeLong ulParamLen) {
-        mechanism = mech;
-        pParameter = pParam;
-        ulParameterLen = ulParamLen;
-    }
-
-    protected List<String> getFieldOrder() {
-        return Arrays.asList(new String[] {
-                "mechanism",
-                "pParameter",
-                "ulParameterLen"
-        });
-    }
 }

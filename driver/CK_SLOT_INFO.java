@@ -77,45 +77,32 @@
  * @author Aktiv Co. <hotline@rutoken.ru>
  */
 
-import com.sun.jna.NativeLong;
+public class CK_SLOT_INFO {
 
-import java.util.Arrays;
-import java.util.List;
+	/*
+	 * slotDescription and manufacturerID have been changed from CK_CHAR to
+	 * CK_UTF8CHAR for v2.11.
+	 */
 
-public class CK_SLOT_INFO extends Pkcs11Structure {
+	public byte[] slotDescription = new byte[64];
 
-    /*
-     * slotDescription and manufacturerID have been changed from CK_CHAR to CK_UTF8CHAR for v2.11.
-     */
+	public byte[] manufacturerID = new byte[32];
 
-    public byte[] slotDescription = new byte[64];
+	public long flags;
 
-    public byte[] manufacturerID = new byte[32];
+	public CK_VERSION hardwareVersion;
 
-    public NativeLong flags;
+	public CK_VERSION firmwareVersion;
 
-    public CK_VERSION hardwareVersion;
+	public CK_SLOT_INFO() {
+	}
 
-    public CK_VERSION firmwareVersion;
+	public CK_SLOT_INFO(byte[] slotDesc, byte[] vendor, long flags, CK_VERSION hwVer, CK_VERSION fwVer) {
+		this.slotDescription = slotDesc;
+		this.manufacturerID = vendor;
+		this.flags = flags;
+		this.hardwareVersion = hwVer;
+		this.firmwareVersion = fwVer;
+	}
 
-    public CK_SLOT_INFO() {}
-
-    public CK_SLOT_INFO(byte[] slotDesc, byte[] vendor,
-            NativeLong flags, CK_VERSION hwVer, CK_VERSION fwVer) {
-        this.slotDescription = slotDesc;
-        this.manufacturerID = vendor;
-        this.flags = flags;
-        this.hardwareVersion = hwVer;
-        this.firmwareVersion = fwVer;
-    }
-
-    protected List<String> getFieldOrder() {
-        return Arrays.asList(new String[] {
-                "slotDescription",
-                "manufacturerID",
-                "flags",
-                "hardwareVersion",
-                "firmwareVersion"
-        });
-    }
 }

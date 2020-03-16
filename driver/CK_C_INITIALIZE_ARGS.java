@@ -24,42 +24,27 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import com.sun.jna.NativeLong;
-import com.sun.jna.Pointer;
+public class CK_C_INITIALIZE_ARGS {
 
-import java.util.Arrays;
-import java.util.List;
+	public CK_C_INITIALIZE_ARGS() {
+	}
 
+	public CK_C_INITIALIZE_ARGS(long CreateMutex, long DestroyMutex, long LockMutex, long UnlockMutex, long flags,
+			long pReserved) {
+		this.CreateMutex = CreateMutex;
+		this.DestroyMutex = DestroyMutex;
+		this.LockMutex = LockMutex;
+		this.UnlockMutex = UnlockMutex;
+		this.flags = flags;
+		this.pReserved = pReserved;
 
-public class CK_C_INITIALIZE_ARGS extends Pkcs11Structure {
-    public CK_C_INITIALIZE_ARGS() {}
+	}
 
-    public CK_C_INITIALIZE_ARGS(Pointer CreateMutex, Pointer DestroyMutex, Pointer LockMutex,
-            Pointer UnlockMutex, NativeLong flags, Pointer pReserved) {
-        this.CreateMutex = CreateMutex;
-        this.DestroyMutex = DestroyMutex;
-        this.LockMutex = LockMutex;
-        this.UnlockMutex = UnlockMutex;
-        this.flags = flags;
-        this.pReserved = pReserved;
+	public long CreateMutex;
+	public long DestroyMutex;
+	public long LockMutex;
+	public long UnlockMutex;
+	public long flags;
+	public long pReserved;
 
-    }
-
-    public Pointer CreateMutex;
-    public Pointer DestroyMutex;
-    public Pointer LockMutex;
-    public Pointer UnlockMutex;
-    public NativeLong flags;
-    public Pointer pReserved;
-
-    protected List<String> getFieldOrder() {
-        return Arrays.asList(new String[] {
-                "CreateMutex",
-                "DestroyMutex",
-                "LockMutex",
-                "UnlockMutex",
-                "flags",
-                "pReserved"
-        });
-    }
 }

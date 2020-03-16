@@ -80,41 +80,35 @@
 import java.util.Arrays;
 import java.util.List;
 
-public class CK_VERSION extends Pkcs11Structure {
-    public byte major; /* integer portion of version number */
-    public byte minor; /* 1/100ths portion of version number */
+public class CK_VERSION {
+	public byte major; /* integer portion of version number */
+	public byte minor; /* 1/100ths portion of version number */
 
-    public CK_VERSION() {}
+	public CK_VERSION() {
+	}
 
-    public CK_VERSION(int major, int minor) {
-        this.major = (byte) major;
-        this.minor = (byte) minor;
-    }
+	public CK_VERSION(int major, int minor) {
+		this.major = (byte) major;
+		this.minor = (byte) minor;
+	}
 
-    /**
-     * Returns the string representation of CK_VERSION.
-     *
-     * @return the string representation of CK_VERSION
-     */
-    public String toString() {
-        StringBuilder buffer = new StringBuilder();
+	/**
+	 * Returns the string representation of CK_VERSION.
+	 *
+	 * @return the string representation of CK_VERSION
+	 */
+	public String toString() {
+		StringBuilder buffer = new StringBuilder();
 
-        buffer.append(major & 0xff);
-        buffer.append('.');
-        int m = minor & 0xff;
-        if (m < 10) {
-            buffer.append('0');
-        }
-        buffer.append(m);
+		buffer.append(major & 0xff);
+		buffer.append('.');
+		int m = minor & 0xff;
+		if (m < 10) {
+			buffer.append('0');
+		}
+		buffer.append(m);
 
-        return buffer.toString();
-    }
-
-    protected List<String> getFieldOrder() {
-        return Arrays.asList(new String[] {
-                "major",
-                "minor"
-        });
-    }
+		return buffer.toString();
+	}
 
 }

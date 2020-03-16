@@ -78,40 +78,27 @@
  * @author Aktiv Co. <hotline@rutoken.ru>
  */
 
-import com.sun.jna.NativeLong;
-import java.util.Arrays;
-import java.util.List;
+public class CK_SESSION_INFO {
 
-public class CK_SESSION_INFO extends Pkcs11Structure {
+	public long slotID;
 
-    public NativeLong slotID;
+	public long state;
 
-    public NativeLong state;
+	public long flags; /* see below */
 
-    public NativeLong flags; /* see below */
+	/*
+	 * ulDeviceError was changed from CK_USHORT to CK_ULONG for v2.0
+	 */
+	public long ulDeviceError; /* device-dependent error code */
 
-    /*
-     * ulDeviceError was changed from CK_USHORT to CK_ULONG for v2.0
-     */
-    public NativeLong ulDeviceError; /* device-dependent error code */
+	public CK_SESSION_INFO() {
+	}
 
-    public CK_SESSION_INFO() {}
-
-    public CK_SESSION_INFO(NativeLong slotID, NativeLong state,
-            NativeLong flags, NativeLong ulDeviceError) {
-        this.slotID = slotID;
-        this.state = state;
-        this.flags = flags;
-        this.ulDeviceError = ulDeviceError;
-    }
-
-    protected List<String> getFieldOrder() {
-        return Arrays.asList(new String[] {
-                "slotID",
-                "state",
-                "flags",
-                "ulDeviceError"
-        });
-    }
+	public CK_SESSION_INFO(long slotID, long state, long flags, long ulDeviceError) {
+		this.slotID = slotID;
+		this.state = state;
+		this.flags = flags;
+		this.ulDeviceError = ulDeviceError;
+	}
 
 }

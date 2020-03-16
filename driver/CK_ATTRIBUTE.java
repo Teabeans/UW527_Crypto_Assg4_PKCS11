@@ -77,81 +77,69 @@
  * @author Aktiv Co. <hotline@rutoken.ru>
  */
 
-import com.sun.jna.*;
-
-import java.util.Arrays;
-import java.util.List;
-
-public class CK_ATTRIBUTE extends Pkcs11Structure {
+public class CK_ATTRIBUTE {
 
     public CK_ATTRIBUTE() {}
 
-    public CK_ATTRIBUTE(NativeLong type, Pointer pVal, NativeLong ulValLen) {
+    public CK_ATTRIBUTE(long type, long pVal, long ulValLen) {
         setAttr(type, pVal, ulValLen);
     }
 
-    public CK_ATTRIBUTE(NativeLong type, NativeLong value) {
+    public CK_ATTRIBUTE(long type, long value) {
         setAttr(type, value);
     }
 
-    public CK_ATTRIBUTE(NativeLong type, byte[] value) {
+    public CK_ATTRIBUTE(long type, byte[] value) {
         setAttr(type, value);
     }
 
-    public CK_ATTRIBUTE(NativeLong type, boolean value) {
+    public CK_ATTRIBUTE(long type, boolean value) {
         setAttr(type, value);
     }
 
-    public CK_ATTRIBUTE(NativeLong type, String value) {
+    public CK_ATTRIBUTE(long type, String value) {
         setAttr(type, value);
     }
 
-    public void setAttr(NativeLong type, Pointer pVal, NativeLong ulValLen) {
+    public void setAttr(long type, long pVal, long ulValLen) {
         this.type = type;
         this.pValue = pVal;
         this.ulValueLen = ulValLen;
     }
 
-    public void setAttr(NativeLong type, NativeLong value) {
+    public void setAttr(long type, long value) {
         this.type = type;
-        pValue = new Memory(NativeLong.SIZE);
-        pValue.setNativeLong(0, value);
-        ulValueLen = new NativeLong(NativeLong.SIZE);
+//        pValue = new Memory(Long.SIZE);
+//        pValue.setlong(0, value);
+        ulValueLen = Long.SIZE;
     }
 
-    public void setAttr(NativeLong type, byte[] value) {
+    public void setAttr(long type, byte[] value) {
         this.type = type;
-        pValue = new Memory(value.length);
-        pValue.write(0, value, 0, value.length);
-        ulValueLen = new NativeLong(value.length);
+//        pValue = new Memory(value.length);
+//        pValue.write(0, value, 0, value.length);
+        ulValueLen = value.length;
     }
 
-    public void setAttr(NativeLong type, boolean value) {
+    public void setAttr(long type, boolean value) {
         this.type = type;
-        pValue = new Memory(Native.getNativeSize(Byte.TYPE));
-        pValue.setByte(0, (byte)(value ? 1 : 0));
-        ulValueLen = new NativeLong(Native.getNativeSize(Byte.TYPE));
+//        pValue = new Memory(Native.getNativeSize(Byte.TYPE));
+//        pValue.setByte(0, (byte)(value ? 1 : 0));
+//        ulValueLen = new long(Native.getNativeSize(Byte.TYPE));
     }
 
-    public void setAttr(NativeLong type, String value) {
+    public void setAttr(long type, String value) {
         this.type = type;
-        pValue = new Memory(value.length() + 1);
-        pValue.setString(0, value);
-        ulValueLen = new NativeLong(value.length() + 1);
+//        pValue = new Memory(value.length() + 1);
+//        pValue.setString(0, value);
+        ulValueLen = value.length() + 1;
     }
 
-    public NativeLong type;
+    public long type;
 
-    public Pointer pValue;
+    public long pValue;
 
     /* ulValueLen went from CK_USHORT to CK_ULONG for v2.0 */
-    public NativeLong ulValueLen; /* in bytes */
+    public long ulValueLen; /* in bytes */
 
-    protected List<String> getFieldOrder() {
-        return Arrays.asList(new String[] {
-                "type",
-                "pValue",
-                "ulValueLen"
-        });
-    }
 }
