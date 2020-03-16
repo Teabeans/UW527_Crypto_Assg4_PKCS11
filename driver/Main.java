@@ -22,7 +22,7 @@
 // File Description
 //-----------------------------------------------------------------------------|
 //
-// Driver for a mock application which attempts to communicate to an HSM
+// Driver for a mock Driver which attempts to communicate to an HSM and Application
 
 //-----------------------------------------------------------------------------|
 // Package Files
