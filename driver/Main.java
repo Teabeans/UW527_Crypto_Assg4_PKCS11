@@ -163,20 +163,6 @@ public class Main {
 
 
     }
-
-    System.out.println( "When instructed to do so, I will read the application message buffer" );
-    applicationRead();
-    if( true ) { // TODO: replace with if there was a valid application message
-      System.out.println( "Now I will convert the application request to a compliant message to the HSM!" );
-      vHSMWrite();
-    }
-
-    System.out.println( "Alternately, I can read the vHSM message buffer" );
-    vHSMRead();
-    if( true ) { // TODO: replace with if there was a valid HSM message
-      System.out.println( "Now I will convert the vHSM compliant response to an application message!" );
-      applicationWrite();
-    }
   }
 
 //-------|---------|---------|---------|---------|---------|---------|---------|
@@ -285,17 +271,12 @@ public class Main {
     System.out.println( "+-------------------------------------------------------------------------------+" );
     System.out.println( "|   OPTIONS                                                                     |" );
     System.out.println( "+-------------------------------------------------------------------------------+" );
-    System.out.println( "|   \u001b[1mL\u001b[0m  - \u001b[4mL\u001b[0mogin                                                                  |" );
-    if( LOGGED_IN ) {
-      System.out.println( "|   \u001b[1mM\u001b[0m  - \u001b[4mM\u001b[0make Key                                                               |" );
-      System.out.println( "|   \u001b[1mR\u001b[0m  - \u001b[4mR\u001b[0mead Key                                                               |" );
-    }
-    else if( !LOGGED_IN ) {
-      System.out.println( "|   \u001b[30;1mM  - (Unavailable - Please log in) Make Key \u001b[0m                              |" );
-      System.out.println( "|   \u001b[30;1mR  - (Unavailable - Please log in) Read Key \u001b[0m                 |" );
-    }
-    System.out.println( "|   \u001b[1mV\u001b[0m  - \u001b[4mV\u001b[0merbosity (toggle)                                                     |" );
-    System.out.println( "|   \u001b[1mX\u001b[0m  - e\u001b[4mX\u001b[0mit                                                                   |" );
+    System.out.println( "|   \u001b[1mAR\u001b[0m  - \u001b[4mA\u001b[0mpplication \u001b[4mR\u001b[0mead                                                      |" );
+    System.out.println( "|   \u001b[1mVW\u001b[0m  - \u001b[4mV\u001b[0mHSM \u001b[4mW\u001b[0mrite                                                            |" );
+    System.out.println( "|   \u001b[1mVR\u001b[0m  - \u001b[4mV\u001b[0mHSM \u001b[4mR\u001b[0mead                                                             |" );
+    System.out.println( "|   \u001b[1mAW\u001b[0m  - \u001b[4mA\u001b[0mpplication \u001b[4mW\u001b[0mrite                                                     |" );
+    System.out.println( "|   \u001b[1mV\u001b[0m   - \u001b[4mV\u001b[0merbosity (toggle)                                                    |" );
+    System.out.println( "|   \u001b[1mX\u001b[0m   - e\u001b[4mX\u001b[0mit                                                                  |" );
     System.out.println( "+-------------------------------------------------------------------------------+" );
     System.out.println();
     System.out.print( "\u001b[37;1mPlease select an option: \u001b[0m" );
