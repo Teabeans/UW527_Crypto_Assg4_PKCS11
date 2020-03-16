@@ -67,13 +67,14 @@ public class Main {
 // GLOBAL CONSTANTS
 //
 // -------|---------|---------|---------|---------|---------|---------|---------|
-  static boolean DEBUG      = false;
-  static boolean FASTMODE   = false;
-  static boolean LOGGED_IN  = true;
-  static String  WHO_AM_I   = "InigoMontoya";
-  static String  MY_SECRET  = "YouKilledMyFatherPrepareToDie";
-  static final String WRITE_FILE = "../msgs/application_to_driver.txt";
-  static final String READ_FILE  = "../msgs/driver_to_application.txt";
+  static boolean DEBUG          = false;
+  static boolean FASTMODE       = false;
+  static boolean LOGGED_IN      = true;
+  static String  IDENTITY_TOKEN = "InigoMontoya"; // Will be reassigned from the vHSM when requested
+  static final String APP_READ_FILE   = "../msgs/application_to_driver.txt";
+  static final String APP_WRITE_FILE  = "../msgs/driver_to_application.txt";
+  static final String VHSM_READ_FILE  = "../msgs/vHSM_to_driver.txt";
+  static final String VHSM_WRITE_FILE = "../msgs/driver_to_vHSM.txt";
 
 // -------|---------|---------|---------|---------|---------|---------|---------|
 //
@@ -101,6 +102,17 @@ public class Main {
       if( choice.equals( "AR" ) ) {
         System.out.println( "---READ FROM APPLICATION SELECTED---");
         System.out.println();
+
+        // Perform the read
+        String readResult = driverReadFromvHSM();
+
+        System.out.println( "-----BEGIN RESPONSE MESSAGE-----\u001b[30;1m" );
+        System.out.println( readResult );
+        System.out.println( "\u001b[0m-----END RESPONSE MESSAGE-----" );
+        System.out.println();
+
+        System.out.println( "\u001b[32;1m\u001b[4mRead from application complete!\u001b[0m" );
+        System.out.println();
       }
 
       // -------|---------|---------|---------|
@@ -108,6 +120,15 @@ public class Main {
       // -------|---------|---------|---------|
       else if( choice.equals( "VW" ) ) {
         System.out.println( "---WRITE TO VHSM SELECTED---");
+        System.out.println();
+
+        System.out.println( "PARAMETERS:" );
+        System.out.println( "Username: " + IDENTITY_TOKEN  );
+        System.out.println();
+
+        driverWriteTovHSM( "<TODO: Compliant key creation request> " + IDENTITY_TOKEN );
+
+        System.out.println( "\u001b[32;1m\u001b[4mRequest sent to vHSM!\u001b[0m" );
         System.out.println();
       }
 
@@ -117,6 +138,17 @@ public class Main {
       else if( choice.equals( "VR" ) ) {
         System.out.println( "---READ FROM vHSM SELECTED---");
         System.out.println();
+
+        // Perform the read
+        String readResult = driverReadFromvHSM();
+
+        System.out.println( "-----BEGIN RESPONSE MESSAGE-----\u001b[30;1m" );
+        System.out.println( readResult );
+        System.out.println( "\u001b[0m-----END RESPONSE MESSAGE-----" );
+        System.out.println();
+
+        System.out.println( "\u001b[32;1m\u001b[4mRead from vHSM complete!\u001b[0m" );
+        System.out.println();
       }
 
       // -------|---------|---------|---------|
@@ -125,6 +157,16 @@ public class Main {
       else if( choice.equals( "AW" ) ) {
         System.out.println( "---WRITE TO APPLICATION SELECTED---");
         System.out.println();
+
+        System.out.println( "PARAMETERS:" );
+        System.out.println( "Username: " + IDENTITY_TOKEN  );
+        System.out.println();
+
+        driverWriteTovHSM( "<TODO: Public Key value and handle?> " + IDENTITY_TOKEN );
+
+        System.out.println( "\u001b[32;1m\u001b[4mResponse returned to application!\u001b[0m" );
+        System.out.println();
+
       }
 
       // -------|---------|---------|---------|
@@ -183,7 +225,7 @@ public class Main {
   public static String driverReadFromApp( ) {
     System.out.println( "This is a read of a message from an application" );
     System.out.println( "Please read me from msgs/application_to_driver.txt" );
-    String result = readFileToString( READ_FILE );
+    String result = readFileToString( APP_READ_FILE );
     return result;
   }
 //-------|---------|---------|---------|
@@ -192,7 +234,7 @@ public class Main {
   public static String driverReadFromvHSM( ) {
     System.out.println( "This is a read of a message from a PKCS#11 vHSM" );
     System.out.println( "Please read me from msgs/vHSM_to_driver.txt" );
-    String result = readFileToString( READ_FILE );
+    String result = readFileToString( VHSM_READ_FILE );
     return result;
   }
 
@@ -202,7 +244,7 @@ public class Main {
   public static void driverWriteToApp( String message ) {
     System.out.println( "This is a write of a message to an application" );
     System.out.println( "Please write me to msgs/driver_to_application.txt" );
-    writeStringToFile( message, WRITE_FILE );
+    writeStringToFile( message, APP_WRITE_FILE );
   }
 //-------|---------|---------|---------|
 // driverWrite()
@@ -210,7 +252,7 @@ public class Main {
   public static void driverWriteTovHSM( String message ) {
     System.out.println( "This is a write of a message to a vHSM" );
     System.out.println( "Please write me to msgs/driver_to_vHSM.txt" );
-    writeStringToFile( message, WRITE_FILE );
+    writeStringToFile( message, VHSM_WRITE_FILE );
   }
 
 //-------|---------|---------|---------|
