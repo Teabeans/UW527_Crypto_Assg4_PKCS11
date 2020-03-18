@@ -52,6 +52,10 @@
 //
 //-------|---------|---------|---------|---------|---------|---------|---------|
 
+import java.security.MessageDigest;            // For SHA256 hashing
+import java.security.NoSuchAlgorithmException; // For SHA256 hashing
+import java.nio.charset.StandardCharsets;      // For SHA256 hashing
+
 import java.io.File;                  // For file operations
 import java.io.FileNotFoundException; // For file exception
 import java.io.IOException;           // For buffered writer
@@ -67,11 +71,11 @@ public class Main {
 // GLOBAL CONSTANTS
 //
 // -------|---------|---------|---------|---------|---------|---------|---------|
-  static boolean DEBUG      = false;
+  static boolean DEBUG      = true;
   static boolean FASTMODE   = false;
   static boolean LOGGED_IN  = true;
   static String  WHO_AM_I   = "InigoMontoya";
-  static String  MY_SECRET  = "YouKilledMyFatherPrepareToDie";
+  static String  KEY_PASSWORD  = "YouKilledMyFatherPrepareToDie";
   static final String WRITE_FILE = "../msgs/application_to_driver.txt";
   static final String READ_FILE  = "../msgs/driver_to_application.txt";
 
@@ -114,10 +118,27 @@ public class Main {
 
         System.out.println( "PARAMETERS:" );
         System.out.println( "Username    : " + WHO_AM_I  );
-        System.out.println( "Key Password: " + MY_SECRET );
+        System.out.println( "Key Password: " + KEY_PASSWORD );
         System.out.println();
 
-        applicationWrite( "<TODO: Keypair generation request> " + WHO_AM_I + " : " + MY_SECRET );
+        // Convert user keypass to key hashword
+        String keyHashword = "";
+        try {
+          keyHashword = hash_SHA256( KEY_PASSWORD );
+        }
+        catch (Exception e) {
+          e.printStackTrace(System.out);
+        }
+
+        String requestString = "MAKE_KEYPAIR:" + WHO_AM_I + ":" + keyHashword;
+        applicationWrite( requestString );
+
+        if( DEBUG ) {
+          System.out.println( "\u001b[30;1m[APP] Writing keypair generation request to file: " + WRITE_FILE + "\u001b[0m");
+          System.out.println( "\u001b[30;1m[APP] Request String: " + requestString + "\u001b[0m");
+          System.out.println();
+        }
+
 
         System.out.println( "\u001b[32;1m\u001b[4mRequest sent!\u001b[0m" );
         System.out.println();
@@ -129,6 +150,11 @@ public class Main {
       else if( choice.equals( "R" ) ) {
         System.out.println( "---RESULT READ SELECTED---");
         System.out.println();
+
+        if( DEBUG ) {
+          System.out.println( "\u001b[30;1m[APP] Reading keypair generation response from file: " + READ_FILE + "\u001b[0m");
+          System.out.println();
+        }
 
         // Perform the read
         String readResult = applicationRead();
@@ -189,6 +215,23 @@ public class Main {
 
 //-------|---------|---------|---------|---------|---------|---------|---------|
 //
+// ENCRYPT / DECRYPT
+//
+//-------|---------|---------|---------|---------|---------|---------|---------|
+
+//-------|---------|---------|---------|
+// hash_SHA256
+//-------|---------|---------|---------|
+  public static String hash_SHA256( String input ) throws NoSuchAlgorithmException {
+    MessageDigest digest = MessageDigest.getInstance("SHA-256");
+    byte[] hash = digest.digest( input.getBytes(StandardCharsets.UTF_8));
+
+    String retString = bytesToHex( hash );
+    return retString;
+  }
+
+//-------|---------|---------|---------|---------|---------|---------|---------|
+//
 // READERS/LOADERS
 //
 //-------|---------|---------|---------|---------|---------|---------|---------|
@@ -225,12 +268,6 @@ public class Main {
     while( fileReader.hasNextLine() ) {
       retString += fileReader.nextLine();
     }
-    if( DEBUG ) {
-      System.out.println( "  [readFile()] - Read File: " + filename );
-      System.out.println( "  [readFile()] - Contents : " );
-      System.out.println( retString );
-      System.out.println();
-    }
     return retString;
   } // Closing readFile()
 
@@ -262,7 +299,11 @@ public class Main {
 // renderOptions()
 //-------|---------|---------|---------|
   public static void renderOptions() {
-    long delay = 10;
+    System.out.println( "Current User : " + WHO_AM_I );
+    System.out.println( "User Password: " + "Not Applicable (demo assumes logged in state)" );
+    System.out.println( "isLoggedIn   : " + LOGGED_IN );
+    System.out.println( "Verbose      : " + DEBUG );
+    System.out.println();
     System.out.println( "+-------------------------------------------------------------------------------+" );
     System.out.println( "|   OPTIONS                                                                     |" );
     System.out.println( "+-------------------------------------------------------------------------------+" );
@@ -279,6 +320,7 @@ public class Main {
     System.out.println( "|   \u001b[1mX\u001b[0m  - e\u001b[4mX\u001b[0mit                                                                   |" );
     System.out.println( "+-------------------------------------------------------------------------------+" );
     System.out.println();
+
     System.out.print( "\u001b[37;1mPlease select an option: \u001b[0m" );
   } // Closing renderOptions()
 
@@ -288,7 +330,18 @@ public class Main {
 //
 //-------|---------|---------|---------|---------|---------|---------|---------|
 
-// None yet identified
+//-------|---------|---------|---------|
+// bytesToHex
+//-------|---------|---------|---------|
+  private static String bytesToHex(byte[] hash) {
+    StringBuffer hexString = new StringBuffer();
+    for (int i = 0; i < hash.length; i++) {
+    String hex = Integer.toHexString(0xff & hash[i]);
+    if(hex.length() == 1) hexString.append('0');
+        hexString.append(hex);
+    }
+    return hexString.toString();
+  } // Closing bytesToHex()
 
 } // Closing class Main
 
