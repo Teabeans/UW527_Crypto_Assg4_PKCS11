@@ -67,10 +67,9 @@ public class Main {
 // GLOBAL CONSTANTS
 //
 // -------|---------|---------|---------|---------|---------|---------|---------|
-  static boolean DEBUG          = false;
+  static boolean DEBUG          = true;
   static boolean FASTMODE       = false;
   static boolean LOGGED_IN      = true;
-  static String  IDENTITY_TOKEN = "InigoMontoya"; // Will be reassigned from the vHSM when requested
   static final String APP_READ_FILE   = "../msgs/application_to_driver.txt";
   static final String APP_WRITE_FILE  = "../msgs/driver_to_application.txt";
   static final String VHSM_READ_FILE  = "../msgs/vHSM_to_driver.txt";
@@ -88,6 +87,13 @@ public class Main {
     System.out.println( "I shunt requests between an application and compliant vHSM" );
     System.out.println( );
 
+    String appRequest    = "";
+    String vHSMRequest   = "";
+    String vHSMResponse  = "";
+    String appResponse   = "";
+    String identity_App  = "identity_App";
+    String identity_vHSM = "identity_vHSM";
+
     Scanner userInput = new Scanner(System.in);
     boolean isRunning = true;
 
@@ -104,12 +110,14 @@ public class Main {
         System.out.println();
 
         // Perform the read
-        String readResult = driverReadFromvHSM();
+        appRequest = driverReadFromApp();
 
-        System.out.println( "-----BEGIN RESPONSE MESSAGE-----\u001b[30;1m" );
-        System.out.println( readResult );
-        System.out.println( "\u001b[0m-----END RESPONSE MESSAGE-----" );
+        System.out.println( "-----BEGIN REQUEST MESSAGE-----\u001b[30;1m" );
+        System.out.println( appRequest );
+        System.out.println( "\u001b[0m-----END REQUEST MESSAGE-----" );
         System.out.println();
+
+        //TODO: Perform conversion from APP to VHSM here
 
         System.out.println( "\u001b[32;1m\u001b[4mRead from application complete!\u001b[0m" );
         System.out.println();
@@ -123,10 +131,10 @@ public class Main {
         System.out.println();
 
         System.out.println( "PARAMETERS:" );
-        System.out.println( "Username: " + IDENTITY_TOKEN  );
+        System.out.println( "Username: " + identity_App  );
         System.out.println();
 
-        driverWriteTovHSM( "<TODO: Compliant key creation request> " + IDENTITY_TOKEN );
+        driverWriteTovHSM( "<TODO: Compliant key creation request> " + identity_App );
 
         System.out.println( "\u001b[32;1m\u001b[4mRequest sent to vHSM!\u001b[0m" );
         System.out.println();
@@ -159,7 +167,7 @@ public class Main {
         System.out.println();
 
         System.out.println( "PARAMETERS:" );
-        System.out.println( "Username: " + IDENTITY_TOKEN  );
+        System.out.println( "Username: " + identity_App );
         System.out.println();
 
         // Application-specific message write in format:
@@ -233,8 +241,9 @@ public class Main {
 // driverRead()
 //-------|---------|---------|---------|
   public static String driverReadFromApp( ) {
-    System.out.println( "This is a read of a message from an application" );
-    System.out.println( "Please read me from msgs/application_to_driver.txt" );
+    if( DEBUG ) {
+      System.out.println( "\u001b[30;1m[DRIVER] Reading request from application @ " + APP_READ_FILE + "\u001b[0m" );
+    }
     String result = readFileToString( APP_READ_FILE );
     return result;
   }
@@ -282,12 +291,6 @@ public class Main {
     while( fileReader.hasNextLine() ) {
       retString += fileReader.nextLine();
     }
-    if( DEBUG ) {
-      System.out.println( "  [readFile()] - Read File: " + filename );
-      System.out.println( "  [readFile()] - Contents : " );
-      System.out.println( retString );
-      System.out.println();
-    }
     return retString;
   } // Closing readFile()
 
@@ -319,7 +322,8 @@ public class Main {
 // renderOptions()
 //-------|---------|---------|---------|
   public static void renderOptions() {
-    long delay = 10;
+    System.out.println( "Verbose      : " + DEBUG );
+    System.out.println();
     System.out.println( "+-------------------------------------------------------------------------------+" );
     System.out.println( "|   OPTIONS                                                                     |" );
     System.out.println( "+-------------------------------------------------------------------------------+" );
