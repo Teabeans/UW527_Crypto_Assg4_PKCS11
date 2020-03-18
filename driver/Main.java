@@ -72,6 +72,7 @@ public class Main {
   static boolean DEBUG          = true;
   static boolean FASTMODE       = false;
   static boolean LOGGED_IN      = true;
+  static String  APP_RESPONSE   = null;
   static final String PATH_APP_DIRECTORY  = "FUNCTION_DIRECTORY_W_APP.txt";
   static final String PATH_VHSM_DIRECTORY = "FUNCTION_DIRECTORY_W_VHSM.txt";
   static final String APP_READ_FILE   = "../msgs/application_to_driver.txt";
@@ -205,20 +206,45 @@ public class Main {
       // vHSM RESULT READ CASE
       // -------|---------|---------|---------|
       else if( choice.equals( "VR" ) ) {
-        System.out.println( "---READ FROM vHSM SELECTED---");
+        System.out.println( "---READ FROM VHSM SELECTED---");
         System.out.println();
 
         // Perform the read
-        String readResult = driverReadFromvHSM();
+        String vhsmResponse = driverReadFromvHSM();
 
         System.out.println( "-----BEGIN RESPONSE MESSAGE-----\u001b[30;1m" );
-        System.out.println( readResult );
+        // In format: C_makeKeyPair 60 <HANDLE> <PUBLIC KEY>
+        System.out.println( vhsmResponse );
         System.out.println( "\u001b[0m-----END RESPONSE MESSAGE-----" );
         System.out.println();
 
-        System.out.println( "\u001b[32;1m\u001b[4mRead from vHSM complete!\u001b[0m" );
-        System.out.println();
-      }
+        //TODO: Perform conversion from VHSM to APP here
+        // Step 0 - Parse the request
+        Scanner respReader = new Scanner( vhsmResponse );
+        String vhsmCMD       = respReader.next();
+        String vhsmNUM       = respReader.next(); // Not used when going back towards app
+        String vhsmHandle    = respReader.next();
+        String vhsmKeyPublic = respReader.next();
+
+        // Step 1 - Validate that the vHSM response is a valid one
+        // Not necessary; assumes it is as it comes from trusted source
+        // boolean appReqIsValid = isLegalCall( funcDirectoryApp, appCMD );
+        if( DEBUG) {
+          System.out.println( "\u001b[30;1m[DRIVER] Concatenating vHSM response... \u001b[0m");
+        }
+
+        // -------|---------|
+        // Step 2 - Perform mapping lookup for function NAME (APP-DRIVER function list)
+        // -------|---------|
+        String appCMD = getKeyByValue( funcDirectoryApp, vhsmCMD );
+
+        APP_RESPONSE = appCMD + " " + vhsmHandle + " " + vhsmKeyPublic;
+
+        if( DEBUG) {
+          System.out.println( "\u001b[30;1m[DRIVER] vHSMResponse concatenated! Ready to send. \u001b[0m");
+          System.out.println( "\u001b[30;1m  " + APP_RESPONSE + "\u001b[0m");
+        }
+      } // Closing vHSM Product Read Case
 
       // -------|---------|---------|---------|
       // APPLICATION RESULT WRITE CASE
@@ -227,25 +253,19 @@ public class Main {
         System.out.println( "---WRITE TO APPLICATION SELECTED---");
         System.out.println();
 
-        System.out.println( "PARAMETERS:" );
-        System.out.println( "Username: " + identity_App );
+        System.out.println( "\u001b[32;1m\u001b[4mWrite to Application complete!\u001b[0m" );
         System.out.println();
-
-        // Application-specific message write in format:
-        // userID:vHSMPrivateKeyHandle:Result_PublicKey
-        String responseString = "InigoMontoya 6 RESULTINGPUBLICKEYINBASE64";
 
         if( DEBUG ) {
           System.out.println( "\u001b[30;1m[DRIVER] Writing keypair generation response to file: " + APP_WRITE_FILE + "\u001b[0m");
-          System.out.println( "\u001b[30;1m[DRIVER] Response String: " + responseString + "\u001b[0m");
+          System.out.println( "\u001b[30;1m[DRIVER] Response String: " + APP_RESPONSE + "\u001b[0m");
           System.out.println();
         }
 
-        driverWriteToApp( responseString );
+        driverWriteToApp( APP_RESPONSE );
 
         System.out.println( "\u001b[32;1m\u001b[4mResponse returned to application!\u001b[0m" );
         System.out.println();
-
       }
 
       // -------|---------|---------|---------|
@@ -305,12 +325,36 @@ public class Main {
 public static String getValueByKey( HashSet<String[]> directory, String tgtKey ) {
   for( String[] tuple : directory ) {
     if( tuple[0].equals( tgtKey ) ) {
+      if( DEBUG ) {
+        System.out.println( "\u001b[30;1m[DRIVER] getValueByKey - Key (" + tgtKey + ") found! Returning value (" + tuple[1] + ")...\u001b[0m");
+      }
       return tuple[1];
     }
-  }  
+  }
+  if( DEBUG ) {
+    System.out.println( "\u001b[30;1m[DRIVER] getValueByKey - Key (" + tgtKey + ") not found. Returning 'NONE'...\u001b[0m");
+  }
   return "NONE";
 }
 
+//-------|---------|---------|---------|
+// getKeyByValue()
+//-------|---------|---------|---------|
+// Queries a database and returns the key by value lookup or "NONE" if not found
+public static String getKeyByValue( HashSet<String[]> directory, String tgtVal ) {
+  for( String[] tuple : directory ) {
+    if( tuple[1].equals( tgtVal ) ) {
+      if( DEBUG ) {
+        System.out.println( "\u001b[30;1m[DRIVER] getValueByKey - Key (" + tgtVal + ") found! Returning value (" + tuple[1] + ")...\u001b[0m");
+      }
+      return tuple[0];
+    }
+  }
+  if( DEBUG ) {
+    System.out.println( "\u001b[30;1m[DRIVER] getValueByKey - Key (" + tgtVal + ") not found. Returning 'NONE'...\u001b[0m");
+  }
+  return "NONE";
+}
 //-------|---------|---------|---------|
 // isLegalCall()
 //-------|---------|---------|---------|
@@ -409,7 +453,7 @@ public static boolean isLegalCall( HashSet<String[]> directory, String tgtCall )
   } // Closing loadFromFile()
 
 //-------|---------|---------|---------|
-// driverRead()
+// driverReadFromApp()
 //-------|---------|---------|---------|
   public static String driverReadFromApp( ) {
     if( DEBUG ) {
@@ -418,8 +462,9 @@ public static boolean isLegalCall( HashSet<String[]> directory, String tgtCall )
     String result = readFileToString( APP_READ_FILE );
     return result;
   }
+
 //-------|---------|---------|---------|
-// driverRead()
+// driverReadFromvHSM()
 //-------|---------|---------|---------|
   public static String driverReadFromvHSM( ) {
     System.out.println( "This is a read of a message from a PKCS#11 vHSM" );
@@ -429,7 +474,7 @@ public static boolean isLegalCall( HashSet<String[]> directory, String tgtCall )
   }
 
 //-------|---------|---------|---------|
-// driverWrite()
+// driverWriteToApp()
 //-------|---------|---------|---------|
   public static void driverWriteToApp( String message ) {
     System.out.println( "This is a write of a message to an application" );
@@ -437,7 +482,7 @@ public static boolean isLegalCall( HashSet<String[]> directory, String tgtCall )
     writeStringToFile( message, APP_WRITE_FILE );
   }
 //-------|---------|---------|---------|
-// driverWrite()
+// driverWriteTovHSM()
 //-------|---------|---------|---------|
   public static void driverWriteTovHSM( String message ) {
     if( DEBUG ) {
