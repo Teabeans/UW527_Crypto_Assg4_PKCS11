@@ -1,1 +1,1 @@
-<TODO: Compliant key creation request> InigoMontoya
+C_GenerateKeyPair 60 InigoMontoya YouKilledMyFatherPrepareToDie

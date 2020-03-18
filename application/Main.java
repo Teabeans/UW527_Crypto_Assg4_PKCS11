@@ -130,7 +130,7 @@ public class Main {
           e.printStackTrace(System.out);
         }
 
-        String requestString = "MAKE_KEYPAIR:" + WHO_AM_I + ":" + keyHashword;
+        String requestString = "MAKE_KEYPAIR " + WHO_AM_I + " " + KEY_PASSWORD;
         applicationWrite( requestString );
 
         if( DEBUG ) {
@@ -164,7 +164,16 @@ public class Main {
         System.out.println( "\u001b[0m-----END RESPONSE MESSAGE-----" );
         System.out.println();
 
+        // Parse and isolate handle + Public key
+        Scanner driverParser = new Scanner( readResult );
+        String cmdToDiscard  = driverParser.next();
+        String handle        = driverParser.next();
+        String keyPublic     = driverParser.next();
+
         System.out.println( "\u001b[32;1m\u001b[4mRead complete!\u001b[0m" );
+        System.out.println( "\u001b[32;1mvHSM Handle    :\u001b[0m " + handle );
+        System.out.println( "\u001b[32;1mvHSM Public Key:\u001b[0m" );
+        System.out.println( keyPublic );
         System.out.println();
       }
 
