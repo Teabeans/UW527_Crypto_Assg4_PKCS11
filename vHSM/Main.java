@@ -106,12 +106,12 @@ public class Main {
 //
 // -------|---------|---------|---------|---------|---------|---------|---------|
 
-  static boolean DEBUG      = false;
+  static boolean DEBUG      = true;
   static boolean FASTMODE   = true;
   static boolean LOGGED_IN  = false;
   static boolean PERSISTENT = true;
-  static String WHO_AM_I   = null;
-  static String MY_SECRET  = null;
+  static String WHO_AM_I    = null;
+  static String MY_SECRET   = null;
   static final String KEY_COUNT       = "keycount.txt";
   static final String KVC_PASSPHRASE  = "test"; // Per assignment specification
   static final String SIGNATURE       = "MyNameIsInigoMontoyaYouKilledMyFatherPrepareToDie";
@@ -128,6 +128,10 @@ public class Main {
   static       String USER_KEYID_OUT  = "user_KeyIDs_output.txt";
   static final String KEYID_KVCDB_IN  = "keyid_KVC.txt";
   static       String KEYID_KVCDB_OUT = "keyid_KVC_output.txt";
+  static final String PATH_DRIVER_DIRECTORY = "FUNCTION_DIRECTORY_W_DRIVER.txt";
+  static final String VHSM_READ_FILE  = "../msgs/driver_to_vHSM.txt";
+  static final String VHSM_WRITE_FILE = "../msgs/vHSM_to_driver.txt";
+
 
 // -------|---------|---------|---------|---------|---------|---------|---------|
 //
@@ -161,6 +165,11 @@ public class Main {
     HashSet<String[]> kvcDB    = loadFromFile( KEYID_KVCDB_IN );
     MY_SECRET = loadSecret( HSM_SECRET );
     int CURR_KEYCOUNT = loadIntFromFile( KEY_COUNT );
+
+    HashSet<String[]> funcDirectoryDriver   = loadFromFile( PATH_DRIVER_DIRECTORY );
+    if( DEBUG ) {
+       System.out.println( "\u001b[30;1m[DRIVER] Loading function directory: " + PATH_DRIVER_DIRECTORY + "\u001b[0m");
+    }
 
     // Auto-login
     if( FASTMODE ) {
@@ -309,12 +318,91 @@ public class Main {
         System.out.println();
       } // Closing HSM Report case
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// -------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|-------|
+//
+// UNDER CONSTRUCTION ! UNDER CONSTRUCTION ! UNDER CONSTRUCTION ! UNDER CONSTRUCTION ! UNDER CONSTRUCTION ! UNDER CONSTRUCTION ! UNDER CONSTRUCTION !
+//
+// -------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|-------|
+
       // -------|---------|---------|---------|
-      // CREATE KEY CASE
+      // COMMUNICATE WITH DRIVER CASE
       // -------|---------|---------|---------|
       else if( choice.equals( "C" ) && LOGGED_IN ) {
-        System.out.println( "---CREATE KEY SELECTED---" );
+        System.out.println( "---DRIVER COMMUNICATION SELECTED---" );
         System.out.println();
+        if( DEBUG ) {
+          System.out.println( "|---------|---------|---------|---------|" );
+          System.out.println( "| Read in message from file" );
+          System.out.println( "|---------|---------|---------|---------|" );
+        }
+
+        // Perform the read
+        if( DEBUG ) {
+          System.out.println( "\u001b[30;1m[vHSM] Reading request from application @: " + VHSM_READ_FILE + "\u001b[0m" );
+        }
+        String driverRequest = vhsmReadFromDriver();
+        // Parse input to arguments
+        Scanner reqParser = new Scanner( driverRequest );
+        String vhsmCMD  = reqParser.next();
+        String vhsmNUM  = reqParser.next();
+        String vhsmUSER = reqParser.next();
+        String vhsmKEYHASH = reqParser.next();
+
+        if( DEBUG ) {
+          System.out.println( "\u001b[30;1m[vHSM] Request received: " + driverRequest + "\u001b[0m" );
+          System.out.println( "\u001b[30;1m  CMD_NAME: " + vhsmCMD     + "\u001b[0m" );
+          System.out.println( "\u001b[30;1m  CMD_NUM : " + vhsmNUM     + "\u001b[0m" );
+          System.out.println( "\u001b[30;1m  USER    : " + vhsmUSER    + "\u001b[0m" );
+          System.out.println( "\u001b[30;1m  KEY_HASH: " + vhsmKEYHASH + "\u001b[0m" );
+          System.out.println();
+        }
+
+        if( DEBUG ) {
+          System.out.println( "|---------|---------|---------|---------|" );
+          System.out.println( "| Validate user and request" );
+          System.out.println( "|---------|---------|---------|---------|" );
+        }
+
+        // Note: No validation at this step, 'login' not implemented for assg4
+        boolean userIsLegal = isLegalUser( userDB, "InigoMontoya" );
+        boolean cmdIsLegal = isLegalCMD( funcDirectoryDriver, "C_GenerateKeyPair", "60" );
+
+        if( !(userIsLegal && cmdIsLegal) ) {
+          System.out.println( "Illegal command request. Aborting." );
+          // TODO: Write error message to return file
+          String response = "UNABLE TO COMPLY";
+          vhsmWriteToDriver( response );
+          continue;
+        }
+
 
         if( DEBUG ) {
           System.out.println( "|---------|---------|---------|---------|" );
@@ -547,7 +635,45 @@ public class Main {
         
         System.out.println( "\u001b[32;1m\u001b[4mRSA keypair generated!\u001b[0m" );
         System.out.println();
-      } // Closing Key Creation case
+      } // Closing Communicate With Driver case
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// -------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|-------|
+//
+// UNDER CONSTRUCTION ! UNDER CONSTRUCTION ! UNDER CONSTRUCTION ! UNDER CONSTRUCTION ! UNDER CONSTRUCTION ! UNDER CONSTRUCTION ! UNDER CONSTRUCTION !
+//
+// -------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|-------|
 
       // -------|---------|---------|---------|
       // ENCRYPT CASE
@@ -884,12 +1010,6 @@ public class Main {
         System.out.println( "\u001b[32;1m\u001b[4mVerbosity toggled!\u001b[0m" );
         System.out.println();
 
-
-// -------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|-------|
-//
-// UNDER CONSTRUCTION ! UNDER CONSTRUCTION ! UNDER CONSTRUCTION ! UNDER CONSTRUCTION ! UNDER CONSTRUCTION ! UNDER CONSTRUCTION ! UNDER CONSTRUCTION !
-//
-// -------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|-------|
       }
 
       // -------|---------|---------|---------|
@@ -1123,6 +1243,43 @@ public class Main {
 //-------|---------|---------|---------|---------|---------|---------|---------|
 
 //-------|---------|---------|---------|
+// isLegalUser()
+//-------|---------|---------|---------|
+// Checks if the user is located inside the provided database
+  public static boolean isLegalUser( HashSet<String[]> directory, String tgtName ) {
+    for( String[] tuple : directory ) {
+      if( tuple[0].equals( tgtName ) ) {
+        if( DEBUG ) {
+          System.out.println( "\u001b[30;1m[vHSM] isLegalUser() - User (" + tgtName + ") found! Returning true...\u001b[0m");
+        }
+        return true;
+      }
+    }
+    return false;
+  } // Closing isLegalUser()
+
+//-------|---------|---------|---------|
+// isLegalCMD()
+//-------|---------|---------|---------|
+// Checks if the CMD name:val pair is located inside the provided database
+  public static boolean isLegalCMD( HashSet<String[]> directory, String tgtKey, String tgtVal ) {
+    for( String[] tuple : directory ) {
+      if( tuple[0].equals( tgtKey ) ) {
+        if( tuple[1].equals( tgtVal ) ) {
+          if( DEBUG ) {
+            System.out.println( "\u001b[30;1m[vHSM] isLegalCMD() - Key (" + tgtKey + ") : Value (" + tgtVal + ") found! Returning true...\u001b[0m");
+          }
+          return true;
+        }
+      }
+    }  
+    if( DEBUG ) {
+      System.out.println( "\u001b[30;1m[vHSM] isLegalCMD() - Key (" + tgtKey + ") : Value (" + tgtVal + ") not found. Returning false...\u001b[0m");
+    }
+    return false;
+  } // Closing isLegalCMD
+
+//-------|---------|---------|---------|
 // obliviate()
 //-------|---------|---------|---------|
   public static void obliviate( HashSet<String[]> database ) {
@@ -1290,6 +1447,27 @@ public class Main {
   } // Closing writeIntToFile()
 
 //-------|---------|---------|---------|
+// vhsmReadFromDriver()
+//-------|---------|---------|---------|
+  public static String vhsmReadFromDriver( ) {
+    if( DEBUG ) {
+      System.out.println( "\u001b[30;1m[vHSM] Reading request from application @: " + VHSM_READ_FILE + "\u001b[0m" );
+    }
+    String result = readFileToString( VHSM_READ_FILE );
+    return result;
+  }
+
+//-------|---------|---------|---------|
+// vhsmWriteToDriver()
+//-------|---------|---------|---------|
+  public static void vhsmWriteToDriver( String message ) {
+    if( DEBUG ) {
+      System.out.println( "\u001b[30;1m[vHSM] Writing request from application to: " + VHSM_WRITE_FILE + "\u001b[0m" );
+    }
+    writeStringToFile( message, VHSM_WRITE_FILE );
+  }
+
+//-------|---------|---------|---------|
 // readFile
 //-------|---------|---------|---------|  
 // Reads a file and returns the contents as a String
@@ -1311,6 +1489,26 @@ public class Main {
       System.out.println( "  [readFile()] - Contents : " );
       System.out.println( retString );
       System.out.println();
+    }
+    return retString;
+  } // Closing readFile()
+
+//-------|---------|---------|---------|
+// readFileToString()
+//-------|---------|---------|---------|  
+// Reads a file and returns the contents as a String
+  public static String readFileToString( String filename ) {    
+    File f = new File( filename );
+    Scanner fileReader = null;
+    try {
+      fileReader = new Scanner( f );
+    }
+    catch (FileNotFoundException e) {
+      e.printStackTrace();
+    }
+    String retString = "";
+    while( fileReader.hasNextLine() ) {
+      retString += fileReader.nextLine();
     }
     return retString;
   } // Closing readFile()
@@ -1549,11 +1747,11 @@ public class Main {
     System.out.println( "|   \u001b[1mR\u001b[0m  - \u001b[4mR\u001b[0meport the contents of the vHSM                                        |" );
     if( LOGGED_IN ) {
       System.out.println( "|   \u001b[1mC\u001b[0m  - \u001b[4mC\u001b[0mommunicate with Driver (receive request)                              |" );
-      System.out.println( "|   \u001b[1mS\u001b[0m  - \u001b[4mS\u001b[0mend key product back                                                  |" );
+      System.out.println( "|   \u001b[1mS\u001b[0m  - \u001b[4mS\u001b[0mend request product back                                              |" );
     }
     else if( !LOGGED_IN ) {
       System.out.println( "|   \u001b[30;1mC  - (Unavailable - Please log in) Communicate with Driver (receive request)\u001b[0m|" );
-      System.out.println( "|   \u001b[30;1mS  - (Unavailable - Please log in) Send key product back \u001b[0m                   |" );
+      System.out.println( "|   \u001b[30;1mS  - (Unavailable - Please log in) Send request product back \u001b[0m               |" );
     }
     System.out.println( "|   \u001b[1mT\u001b[0m  - \u001b[4mT\u001b[0mare HSM (drop tables)                                                 |" );
     System.out.println( "|   \u001b[1mV\u001b[0m  - \u001b[4mV\u001b[0merbosity (toggle)                                                     |" );
