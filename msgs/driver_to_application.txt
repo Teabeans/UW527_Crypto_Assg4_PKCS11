@@ -1,1 +1,1 @@
-<TODO: Driver keypair response to application from vHSM>
+InigoMontoya:6:RESULTINGPUBLICKEYINBASE64

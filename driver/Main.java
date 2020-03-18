@@ -162,7 +162,17 @@ public class Main {
         System.out.println( "Username: " + IDENTITY_TOKEN  );
         System.out.println();
 
-        driverWriteTovHSM( "<TODO: Public Key value and handle?> " + IDENTITY_TOKEN );
+        // Application-specific message write in format:
+        // userID:vHSMPrivateKeyHandle:Result_PublicKey
+        String responseString = "InigoMontoya:6:RESULTINGPUBLICKEYINBASE64";
+
+        if( DEBUG ) {
+          System.out.println( "\u001b[30;1m[DRIVER] Writing keypair generation response to file: " + APP_WRITE_FILE + "\u001b[0m");
+          System.out.println( "\u001b[30;1m[DRIVER] Response String: " + responseString + "\u001b[0m");
+          System.out.println();
+        }
+
+        driverWriteToApp( responseString );
 
         System.out.println( "\u001b[32;1m\u001b[4mResponse returned to application!\u001b[0m" );
         System.out.println();
