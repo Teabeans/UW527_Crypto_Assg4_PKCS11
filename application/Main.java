@@ -94,7 +94,7 @@ public class Main {
       System.out.println();
 
       // -------|---------|---------|---------|
-      // SEND KEYPAIR REQUEST CASE
+      // LOGIN CASE
       // -------|---------|---------|---------|
       if( choice.equals( "L" ) ) {
         System.out.println( "---LOGIN SELECTED---" );
