@@ -668,10 +668,7 @@ public class Main {
         System.out.println( "Returning... " );
         System.out.println( response );
 
-
-
-
-
+        vhsmWriteToDriver( response );
       } // Closing Send Product Case
 
       // -------|---------|---------|---------|
