@@ -60,6 +60,8 @@ import java.io.FileWriter;            // For buffered writing
 import java.util.Iterator;            // For iterators
 import java.util.Scanner;             // For user inputs
 
+import java.util.HashSet;             // For hashsets. Used to create funcname:number listings
+
 public class Main {
 
 // -------|---------|---------|---------|---------|---------|---------|---------|
@@ -70,7 +72,8 @@ public class Main {
   static boolean DEBUG          = true;
   static boolean FASTMODE       = false;
   static boolean LOGGED_IN      = true;
-  static final String FUNC_DIRECTORY  = "FUNCTION_DIRECTORY.txt";
+  static final String PATH_APP_DIRECTORY  = "FUNCTION_DIRECTORY_W_APP.txt";
+  static final String PATH_VHSM_DIRECTORY = "FUNCTION_DIRECTORY_W_VHSM.txt";
   static final String APP_READ_FILE   = "../msgs/application_to_driver.txt";
   static final String APP_WRITE_FILE  = "../msgs/driver_to_application.txt";
   static final String VHSM_READ_FILE  = "../msgs/vHSM_to_driver.txt";
@@ -83,9 +86,28 @@ public class Main {
 // -------|---------|---------|---------|---------|---------|---------|---------|
 
   public static void main(String[] args) {
+    if( DEBUG ) {
+       System.out.println( "\u001b[30;1m[DRIVER] Loading function directory: " + PATH_APP_DIRECTORY + "\u001b[0m");
+    }
+    HashSet<String[]> funcDirectoryApp   = loadFromFile( PATH_APP_DIRECTORY      );
+    if( DEBUG ) {
+       System.out.println( "\u001b[30;1m[DRIVER] Loading function directory: " + PATH_VHSM_DIRECTORY + "\u001b[0m");
+    }
+    HashSet<String[]> funcDirectoryVHSM  = loadFromFile( PATH_VHSM_DIRECTORY   );
+    if( DEBUG ) {
+       System.out.println();
+       System.out.println( "\u001b[30;1m[DRIVER] Validity checks: " + PATH_APP_DIRECTORY + "\u001b[0m");
+       System.out.println( "\u001b[30;1m  AppDirectory .contains('LOGIN'            ): " + isLegalCall( funcDirectoryApp, "LOGIN"              ) + " (false expected) \u001b[0m");
+       System.out.println( "\u001b[30;1m  AppDirectory .contains('(LOGIN)'          ): " + isLegalCall( funcDirectoryApp, "(LOGIN)"            ) + "  (true  expected) \u001b[0m");
+       System.out.println( "\u001b[30;1m  AppDirectory .contains('MAKE_KEYPAIR'     ): " + isLegalCall( funcDirectoryApp, "MAKE_KEYPAIR"       ) + "  (true  expected) \u001b[0m");
+       System.out.println( "\u001b[30;1m[DRIVER] Validity checks: " + PATH_VHSM_DIRECTORY + "\u001b[0m");
+       System.out.println( "\u001b[30;1m  vHSMDirectory.contains('F_ooBarBaz'       ): " + isLegalCall( funcDirectoryVHSM, "F_ooBarBaz"        ) + " (false expected) \u001b[0m");
+       System.out.println( "\u001b[30;1m  vHSMDirectory.contains('C_SignInit'       ): " + isLegalCall( funcDirectoryVHSM, "C_SignInit"        ) + "  (true  expected) \u001b[0m");
+       System.out.println( "\u001b[30;1m  vHSMDirectory.contains('C_GenerateKeyPair'): " + isLegalCall( funcDirectoryVHSM, "C_GenerateKeyPair" ) + "  (true  expected) \u001b[0m");
+    }
+
     System.out.println();
     System.out.println( "\u001b[37;1mWELCOME TO THE vHSM DRIVER EXCHANGE INTERFACE: \u001b[0m" );
-    System.out.println( "I shunt requests between an application and compliant vHSM" );
     System.out.println( );
 
     String appRequest    = "";
@@ -237,11 +259,102 @@ public class Main {
 //
 //-------|---------|---------|---------|---------|---------|---------|---------|
 
+//-------|---------|---------|---------|
+// isLegalCall()
+//-------|---------|---------|---------|
+// Accepts a call directory and returns whether the arg is found in it
+public static boolean isLegalCall( HashSet<String[]> directory, String tgtCall ) {
+  for( String[] tuple : directory ) {
+    if( tuple[0].equals( tgtCall ) ) {
+      return true;
+    }
+  }  
+  return false;
+}
+
 //-------|---------|---------|---------|---------|---------|---------|---------|
 //
 // READERS/LOADERS
 //
 //-------|---------|---------|---------|---------|---------|---------|---------|
+
+//-------|---------|---------|---------|
+// loadFromFile()
+//-------|---------|---------|---------|
+// Loads a correctly formatted (space delimited) key:value pair HashSet from file and returns it
+  public static HashSet<String[]> loadFromFile( String filename ) {
+    boolean LOCAL_DEBUG = false;
+//-------|---------|
+// STEP 1 - SET FILENAME
+//-------|---------|
+    // Ignore: filename is passed in as formal parameter    
+    // Check result
+    if( DEBUG ) {
+      System.out.println( "\u001b[30;1m  [loadFromFile()] - Load from file: '" + filename + "'\u001b[0m" );
+    }
+//-------|---------|
+// STEP 2 - OPEN TARGET FILE
+//-------|---------|
+    // Do work for this code section
+    File f = new File( filename );
+    if( DEBUG && LOCAL_DEBUG) {
+      System.out.println( "Checking file open operation:" );
+      System.out.println( "  File name    : " + f.getName()         );
+      System.out.println( "  Path         : " + f.getPath()         );
+      System.out.println( "  Absolute path: " + f.getAbsolutePath() );
+      System.out.println( "  Parent       : " + f.getParent()       );
+      System.out.println( "  Exists       : " + f.exists()          );
+      if( f.exists() ) {
+        System.out.println();
+        System.out.println( "File exists. Checking file states:" );
+        System.out.println( "  Is writeable      : " + f.canWrite()    ); 
+        System.out.println( "  Is readable       : " + f.canRead()     ); 
+        System.out.println( "  Is a directory    : " + f.isDirectory() ); 
+        System.out.println( "  File Size in bytes: " + f.length()      );
+        System.out.println();
+        System.out.println( "Printing file object:" );
+        System.out.println( f );
+        System.out.println();
+      }
+    }
+//-------|---------|
+// STEP 3 - LOAD FILE OBJECT TO A SCANNER
+//-------|---------|
+    Scanner fileReader = null;
+    try {
+      fileReader = new Scanner( f );
+    }
+    catch (FileNotFoundException e) {
+      e.printStackTrace();
+    }
+
+//-------|---------|
+// STEP 4 - Make a return hashset
+//-------|---------|
+    HashSet<String[]> retHashset = new HashSet<String[]>();
+    if( DEBUG ) {
+      System.out.println( "\u001b[30;1m  [loadFromFile()] - Hashset created. Populating... \u001b[0m" );
+    }
+//-------|---------|
+// STEP 5 - Read over the file and jam everything into the set
+//-------|---------|
+    while( fileReader.hasNext() ) {
+      String currLine = fileReader.nextLine();
+      Scanner lineReader = new Scanner( currLine );
+      String[] currPair = new String[2];
+      currPair[0] = lineReader.next();
+      currPair[1] = lineReader.next();
+      retHashset.add( currPair );
+      if( DEBUG ) {
+        System.out.println( "\u001b[30;1m    " + currPair[0] + " : " + currPair[1] + " \u001b[0m" );
+      }
+
+    }
+    if( DEBUG ) {
+      System.out.println( "\u001b[30;1m  [loadFromFile()] - Returning hashset... \u001b[0m" );
+    }
+    return retHashset;
+  } // Closing loadFromFile()
 
 //-------|---------|---------|---------|
 // driverRead()
