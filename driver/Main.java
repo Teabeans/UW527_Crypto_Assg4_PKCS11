@@ -70,6 +70,7 @@ public class Main {
   static boolean DEBUG          = true;
   static boolean FASTMODE       = false;
   static boolean LOGGED_IN      = true;
+  static final String FUNC_DIRECTORY  = "FUNCTION_DIRECTORY.txt";
   static final String APP_READ_FILE   = "../msgs/application_to_driver.txt";
   static final String APP_WRITE_FILE  = "../msgs/driver_to_application.txt";
   static final String VHSM_READ_FILE  = "../msgs/vHSM_to_driver.txt";
@@ -133,6 +134,11 @@ public class Main {
         System.out.println( "PARAMETERS:" );
         System.out.println( "Username: " + identity_App  );
         System.out.println();
+
+        // TODO: In format:
+        // make_keypair:<function_number>:<args including keypassword and user session token>
+
+        // TODO: Bonus, make a config file or directory listing of all available func names/IDs, check for validity
 
         driverWriteTovHSM( "<TODO: Compliant key creation request> " + identity_App );
 
